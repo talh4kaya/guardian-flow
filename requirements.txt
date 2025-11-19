@@ -1,0 +1,12 @@
+pandas
+numpy
+scikit-learn
+matplotlib
+seaborn
+jupyterlab
+pytest
+fastapi
+uvicorn
+pydantic
+python-dotenv
+pre-commit
