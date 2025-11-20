@@ -1,27 +1,39 @@
-# 1. Taban İmaj (Python 3.9 yüklü hafif bir Linux)
+# 1. Taban İmaj
 FROM python:3.9-slim
 
-# 2. Çalışma dizinini ayarla
+# 2. Çalışma dizini
 WORKDIR /app
 
-# 3. Önce gereksinimleri kopyala (Cache avantajı için)
+# 3. Gereksinimleri yükle
 COPY requirements.txt .
-
-# 4. Kütüphaneleri yükle
-# --no-cache-dir: İmaj boyutunu şişirmemek için önbellek tutma
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 5. Kaynak kodları ve modeli kopyala
+# 4. Kaynak kodları kopyala
 COPY src/ src/
-COPY models/ models/
-# (Data klasörünü kopyalamıyoruz, modele ve koda ihtiyacımız var)
 
-# 6. Çevresel değişken (Python çıktıları anında görünsün diye)
+# 5. Gerekli klasörleri oluştur (Garanti olsun)
+RUN mkdir -p models data/raw data/processed
+
+# ---------------------------------------------------
+# 🛠 KRİTİK HAMLE: MODELİ BURADA SIFIRDAN EĞİTİYORUZ
+# ---------------------------------------------------
+
+# A) Sentetik veriyi üret
+RUN python src/data/make_dataset.py
+
+# B) Veriyi işle (Feature Engineering)
+RUN python src/data/preprocess.py
+
+# C) Modeli eğit ve kaydet (models/model_pipeline.joblib oluşacak)
+RUN python src/models/train_model.py
+
+# ---------------------------------------------------
+
+# 6. Çevresel değişkenler
 ENV PYTHONUNBUFFERED=1
 
-# 7. Konteynerin dışarıya açacağı port
+# 7. Portu dışarı aç
 EXPOSE 8000
 
-# 8. Başlatma komutu
-# host 0.0.0.0 olmak ZORUNDA (Yoksa dışarıdan erişilemez)
+# 8. Başlat
 CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
