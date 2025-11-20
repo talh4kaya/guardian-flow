@@ -1,0 +1,35 @@
+name: Guardian-Flow CI Pipeline
+
+# Ne zaman çalışsın? (Main dalına her push yapıldığında)
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest  # GitHub'ın sağladığı sanal Ubuntu makinesi
+
+    steps:
+    # 1. Kodları çek
+    - uses: actions/checkout@v3
+
+    # 2. Python Kur
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.9"
+
+    # 3. Kütüphaneleri Yükle
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        # Test için ekstra kütüphane (httpx fastapi testleri için gerekli)
+        pip install httpx
+
+    # 4. Testleri Çalıştır
+    - name: Run Tests with Pytest
+      run: |
+        pytest tests/
