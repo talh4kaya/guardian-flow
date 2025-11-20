@@ -1,6 +1,5 @@
 name: Guardian-Flow CI Pipeline
 
-# Ne zaman çalışsın? (Main dalına her push yapıldığında)
 on:
   push:
     branches: [ "main" ]
@@ -9,7 +8,7 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest  # GitHub'ın sağladığı sanal Ubuntu makinesi
+    runs-on: ubuntu-latest
 
     steps:
     # 1. Kodları çek
@@ -26,10 +25,24 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        # Test için ekstra kütüphane (httpx fastapi testleri için gerekli)
-        pip install httpx
+        pip install httpx pytest
 
-    # 4. Testleri Çalıştır
+    # 4. Modeli Sıfırdan Oluştur (CI Ortamında)
+    - name: Build Model from Scratch
+      run: |
+        echo "🎲 Sentetik veri üretiliyor..."
+        python src/data/make_dataset.py
+        
+        echo "🧹 Veri işleniyor..."
+        python src/data/preprocess.py
+        
+        echo "🏋️ Model eğitiliyor..."
+        python src/models/train_model.py
+        
+        echo "✅ Model dosyası oluşturuldu:"
+        ls -l models/
+
+    # 5. Testleri Çalıştır
     - name: Run Tests with Pytest
       run: |
-        pytest tests/
+        python -m pytest
