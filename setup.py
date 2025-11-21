@@ -14,7 +14,7 @@ directories = [
     "src/monitoring",
     "src/api",
     "tests",
-    ".github/workflows"
+    ".github/workflows",
 ]
 
 # Dosyalar ve içerikleri
@@ -49,20 +49,22 @@ pre-commit
     "src/api/main.py": "",
     "data/raw/.gitkeep": "",
     "data/processed/.gitkeep": "",
-    "data/drift_db/.gitkeep": ""
+    "data/drift_db/.gitkeep": "",
 }
+
 
 def create_structure():
     # Klasörleri oluştur
     for directory in directories:
         os.makedirs(directory, exist_ok=True)
         print(f"Klasör oluşturuldu: {directory}")
-    
+
     # Dosyaları oluştur
     for filepath, content in files.items():
         with open(filepath, "w", encoding="utf-8") as f:
             f.write(content.strip())
         print(f"Dosya oluşturuldu: {filepath}")
+
 
 if __name__ == "__main__":
     create_structure()

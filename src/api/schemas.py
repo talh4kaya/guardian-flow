@@ -1,5 +1,7 @@
+
+
 from pydantic import BaseModel
-from datetime import datetime
+
 
 # 1. İstek Şeması (Kullanıcı ne göndermeli?)
 class TransactionInput(BaseModel):
@@ -14,9 +16,10 @@ class TransactionInput(BaseModel):
             "example": {
                 "timestamp": "2023-11-20 14:30:00",
                 "amount": 150.50,
-                "merchant": "supermarket"
+                "merchant": "supermarket",
             }
         }
+
 
 # 2. Yanıt Şeması (Biz ne döneceğiz?)
 class PredictionOutput(BaseModel):
